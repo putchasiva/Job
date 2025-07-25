@@ -1,0 +1,1511 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Job Matcher Pro - No Cap</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Mono&display=swap" rel="stylesheet">
+<style>
+
+
+  body {
+    margin: 0;
+    font-family: 'Merriweather', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+  }
+  body.light { background-color: #f5f5f5; color: #222; }
+  body.neon { background-color: #000; color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
+  
+  body.gradient-1 { background: linear-gradient(to right, #6a11cb, #2575fc); color: #fff; }
+  body.gradient-2 { background: linear-gradient(to right, #fc5c7d, #6a82fb); color: #fff; }
+  body.gradient-3 { background: linear-gradient(to right, #ffafbd, #ffc3a0); color: #222; }
+  body.gradient-4 { background: linear-gradient(to right, #2E8B57, #3CB371); color: #fff; }
+  body.gradient-5 { background: linear-gradient(to right, #7f00ff, #e100ff); color: #fff; }
+
+  h1 {
+      text-align: center;
+      margin: 1.5rem 0;
+      letter-spacing: 0.15em;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: inherit;
+  }
+  h2, h3 {
+      font-weight: 700;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+  }
+  
+  .tag, .autocomplete-item,
+  button, label, select,
+  .quiz-option,
+  #modal-title, #what-if-content h2, #faq-modal-title,
+  .result-card .card-info, .saved-item .card-info, .compare-card .card-info,
+  #daily-spark-panel h3, #daily-spark-panel p,
+  #quiz-progress, #quiz-question,
+  #what-if-results h4,
+  table th {
+    text-transform: none;
+  }
+  #skills-input input::placeholder {
+      text-transform: none;
+      font-size: 0.9em;
+      font-family: 'Merriweather', serif;
+  }
+  #skills-input input {
+      text-transform: none;
+      font-family: 'Merriweather', serif;
+      font-size: 1.1rem;
+  }
+  table td {
+      text-transform: none;
+  }
+  .tag, .autocomplete-item {
+      font-family: 'Fira Mono', monospace;
+  }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 2rem; display: flex; flex-direction: column; gap: 2rem; position: relative; z-index: 1; border-radius: 12px; background: rgba(0, 0, 0, 0.1); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+
+  .button-quote-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  @media (max-width: 768px) {
+    .button-quote-row {
+      flex-direction: column;
+    }
+  }
+  .btn-group { display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; }
+  button, select {
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      border: 2px solid;
+      background: rgba(255, 255, 255, 0.1);
+      color: inherit;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      font-family: 'Merriweather', serif;
+      font-weight: 700;
+  }
+  button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+  }
+  button:active {
+      transform: translateY(0);
+  }
+  select {
+      background: rgba(255, 255, 255, 0.15);
+  }
+  #skills-input { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.75rem; border: 2px solid; border-radius: 0.75rem; position: relative; z-index: 2; background: rgba(255, 255, 255, 0.08); align-items: center; }
+  #skills-input input { flex: 1; border: none; background: transparent; padding: 0.5rem; font-size: 1.1rem; outline: none; color: inherit; min-width: 150px; }
+  .tag { background: #ff00ff; color: #1a002d; padding: .5rem 1rem; border-radius: 9999px; display: flex; align-items: center; font-size: 0.95em; }
+  .tag .remove { margin-left: 0.75rem; cursor: pointer; font-weight: bold; font-size: 1.2em; }
+  .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow: auto;
+      z-index: 3;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      padding: 5px 0;
+  }
+  .autocomplete-item {
+      padding: 0.75rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #fff !important;
+      transition: background 0.2s;
+  }
+  .autocomplete-item.active { background: rgba(255, 255, 255, 0.2); }
+  .autocomplete-item:hover { background: rgba(255, 255, 255, 0.1); }
+  #results, #saved-careers-panel, #compare-panel, #daily-spark-panel { background: rgba(255, 255, 255, 0.08); padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
+  .result-card, .saved-item, .compare-card { background: rgba(255, 255, 255, 0.12); padding: 1.2rem; border-radius: .75rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .card-info { cursor: pointer; flex: 1; font-size: 1.2rem; font-weight: 700; }
+  .card-actions button { margin-left: 0.75rem; padding: 0.6rem 1rem; font-size: 1.1rem; }
+  #career-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: none; align-items: center; justify-content: center; z-index: 100; }
+  #modal-content {
+    background: #f9f9f9; 
+    color: #222; 
+    border: 2px solid #ccc; 
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  
+  #modal-content * {
+      color: #222; 
+  }
+  #modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; background: none; color: #222; border: none; font-size: 2rem; z-index: 10; }
+  .star-rating { display: flex; gap: 6px; cursor: pointer; font-size: 1.5rem; }
+  .star { color: gold; }
+  #theme-select { padding: 0.6rem 1rem; font-size: 1.1rem; }
+  #quiz-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+  }
+  #quiz-content {
+      background: inherit;
+      padding: 2rem;
+      border: 3px solid;
+      border-image-slice: 1;
+      border-image-source: linear-gradient(to right, #ff00ff, #00ffff);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70vh;
+      overflow-y: auto;
+      color: inherit;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      animation: neon-glow 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes neon-glow {
+      from { box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff; }
+      to { box-shadow: 0 0 20px #00ffff, 0 0 30px #ff00ff; }
+  }
+  #quiz-content h3 { margin-top: 0; font-size: 2rem; }
+  #quiz-progress { margin-bottom: 1.5rem; font-weight: bold; font-size: 1.2rem; }
+  .quiz-option { display: block; margin-bottom: .75rem; cursor: pointer; padding: .8rem 1.2rem; border: 1px solid; border-radius: 6px; font-size: 1.1rem; transition: background 0.2s; }
+  .quiz-option.selected { background: rgba(255, 255, 255, 0.2); }
+  .quiz-option:hover { background: rgba(255, 255, 255, 0.1); }
+  button:focus, select:focus, input:focus { outline: 2px solid; }
+  .compare-card-diff { color: orange; font-weight: bold; }
+
+  #daily-spark-panel {
+      text-align: center;
+      padding: 2rem;
+      border: 2px dashed #ff00ff;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+  }
+  #daily-spark-panel h3 { font-size: 1.8rem; margin-top: 0; }
+  #daily-spark-panel p { margin: 0.8rem 0; font-size: 1.2em; }
+  #daily-spark-panel button { margin-top: 1.2rem; }
+  #what-if-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 101;
+  }
+  #what-if-content {
+      background: inherit;
+      border: 2px solid;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  #what-if-content h2 { margin-top: 0; font-size: 2rem; }
+  #what-if-content .skill-select-container {
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+  }
+  #what-if-content select {
+      padding: 0.8rem;
+      border-radius: 6px;
+      background: #333;
+      color: inherit;
+      border: 1px solid #555;
+      font-size: 1.1rem;
+      flex: 1;
+      min-width: 150px;
+  }
+  #what-if-content button { margin-top: 1.2rem; flex-shrink: 0; }
+  #what-if-results { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+  #what-if-results .result-card { background: rgba(255, 255, 255, 0.05); }
+  #personal-statement-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 102;
+  }
+  #personal-statement-content {
+      background: inherit;
+      border: 2px solid;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  #personal-statement-content h2 { margin-top: 0; font-size: 2rem; }
+  #personal-statement-content textarea {
+      width: calc(100% - 20px);
+      height: 150px;
+      padding: 10px;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background: rgba(255, 255, 255, 0.1);
+      color: inherit;
+      font-family: 'Merriweather', serif;
+      font-size: 1rem;
+      resize: vertical;
+  }
+  #personal-statement-content button { margin-top: 0; }
+  table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+  }
+  table th, table td {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.8rem;
+      text-align: left;
+      font-size: 1rem;
+  }
+  table th {
+      background-color: rgba(255, 255, 255, 0.1);
+      font-weight: bold;
+  }
+  #faq-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 103;
+  }
+  #faq-content {
+      background: inherit;
+      border: 2px solid;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  #faq-modal-title { margin-top: 0; font-size: 2rem; }
+  #faq-modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; background: none; color: inherit; border: none; font-size: 2rem; z-index: 10; }
+  .faq-achievement-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .faq-achievement-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+  }
+  .faq-achievement-item h4 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      color: inherit;
+      text-transform: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+  .faq-achievement-item h4 .faq-icon {
+      font-size: 1.5em;
+  }
+  .faq-achievement-item p {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      text-transform: none;
+  }
+  .faq-achievement-item small {
+      display: block;
+      margin-top: 0.2rem;
+      font-size: 0.85rem;
+      color: #bbb;
+      text-transform: none;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  .quote {
+      font-style: italic;
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-top: 1rem;
+      text-align: center;
+      color: #000;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px;
+      border-radius: 8px;
+  }
+  .quote::before { content: "“"; }
+  .quote::after { content: "”"; }
+  .quote cite {
+      display: block;
+      font-style: normal;
+      font-size: 0.5em;
+      margin-top: 0.5em;
+      color: #333;
+      font-weight: 400;
+  }
+</style>
+</head>
+<body class="light">
+  <h1>J-O-B Matcher Pro</h1>
+  <div class="container">
+    <div id="skills-input" tabindex="0">
+      <input id="skill-input" type="text" placeholder="Whatcu good at fool?" autocomplete="off" aria-label="Enter your skills"/>
+      <div id="autocomplete" class="autocomplete-list" hidden></div>
+    </div>
+    
+    <div class="button-quote-row">
+      <div class="btn-group">
+        <button id="clear-button" aria-label="Clear all entered skills">Clear All</button>
+        <label for="theme-select">Choose Your Vibe:</label>
+        <select id="theme-select" aria-label="Select app theme">
+          <option value="random">Yolo Vibe</option>
+          <option value="light">The Basic Look</option>
+          <option value="neon">Glow Up</option>
+          <option value="gradient-1">Ds2</option>
+          <option value="gradient-2">Golden Hour</option>
+          <option value="gradient-3">Sweater Weather</option>
+          <option value="gradient-4">March Madness</option>
+          <option value="gradient-5">Purple Rain</option>
+        </select>
+        <button id="quiz-button" aria-label="Take a skill discovery quiz">Take Skill Quiz</button>
+        <button id="faq-button" aria-label="View frequently asked questions">FAQ</button>
+      </div>
+      <div class="quote">
+          "I'm In My Bag Right Now, Like I'm A Grocery Store."
+          <cite>- Lil Baby</cite>
+      </div>
+    </div>
+
+    <section id="results"><h3>Results</h3></section>
+    <section id="saved-careers-panel"><h3>Saved Careers</h3></section>
+    <section id="compare-panel"><h3>Compare Careers</h3></section>
+  </div>
+
+  <div id="career-modal"><div id="modal-content">
+    <button id="modal-close" aria-label="Close career details modal">&times;</button>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+  </div></div>
+
+  <div id="quiz-container"><div id="quiz-content">
+    <button id="quiz-close" aria-label="Close quiz">&times;</button>
+    <h3>Skill Discovery Quiz</h3>
+    <div id="quiz-progress"></div>
+    <div id="quiz-question"></div>
+    <div id="quiz-options"></div>
+    <button id="quiz-next" aria-label="Next quiz question">Next</button>
+    <button id="quiz-restart" aria-label="Restart quiz" style="display:none;">Restart Quiz</button>
+  </div></div>
+
+  <div id="what-if-modal"><div id="what-if-content">
+    <button id="what-if-close" aria-label="Close what-if modal">&times;</button>
+    <h2>What If I Acquired A New Skill?</h2>
+    <div class="skill-select-container">
+        <label for="what-if-skill">Add A Hypothetical Skill:</label>
+        <select id="what-if-skill" aria-label="Select a hypothetical skill to add"></select>
+        <button id="simulate-what-if" aria-label="Simulate job matches with hypothetical skill">Simulate</button>
+    </div>
+    <div id="what-if-results">
+        <p>Select A Skill Above And Click 'Simulate' To See How It Impacts Your Career Matches.</P>
+        <div class="quote" style="margin-top: 1rem;">
+            "Money Is A Motivation, Not A Destination."
+            <cite>- Drake</cite>
+        </div>
+    </div>
+  </div></div>
+
+    <div id="personal-statement-modal"><div id="personal-statement-content">
+        <button id="personal-statement-close" aria-label="Close personal statement modal">&times;</button>
+        <h2>Your Personal Statement</h2>
+        <p>Craft A Brief Statement (At Least 3 Paragraphs) To Highlight Your Interest In This Career. This Helps Us Understand Your Motivation.</p>
+        <textarea id="personal-statement-text" placeholder="Start writing here..."></textarea>
+        <button id="personal-statement-submit" aria-label="Submit your personal statement">Submit Statement</button>
+        <div class="quote" style="margin-top: 1rem;">
+            "I'm Just Living Life, I Ain't Trying To Prove Nothing."
+            <cite>- Mac Miller</cite>
+        </div>
+    </div></div>
+
+    <div id="faq-modal">
+        <div id="faq-content">
+            <button id="faq-modal-close" aria-label="Close FAQ modal">&times;</button>
+            <h2 id="faq-modal-title">FAQ</h2>
+            <div id="faq-achievements-list">
+                </div>
+            <p style="margin-top: 2rem;">More Questions And Answers Can Be Added Here.</p>
+        </div>
+    </div>
+
+<script>
+
+
+
+var SKILLS = [
+  "Coding", "Photography", "Writing", "Painting", "Design", "Marketing",
+  "Analytics", "Public Speaking", "Data Analysis", "Ui/Ux", "Project Management",
+  "Audio Editing", "Video Editing", "Illustration", "Problem Solving",
+  "Communication", "Napping", "Dream Interpretation", "Pillow Fort Construction",
+  "Deep Relaxation", "Culinary Appreciation", "Descriptive Writing", "Taste Testing",
+  "Critical Thinking", "Food Photography", "Trend Analysis", "Pattern Recognition",
+  "Social Media Savviness", "Content Curation", "Algorithm Understanding",
+  "Sound Design", "Microphone Technique", "Relaxation Techniques",
+  "Strategic Thinking", "Quick Reflexes", "Game Knowledge", "Deck Building", "Audience Engagement",
+  "Emotional Intelligence", "Social Commentary", "Fan Engagement", "Pop Culture Knowledge",
+  "Breathing", "Talking", "Sleeping", "Watching Tv/Phone",
+  "Professional Toronto Accent Imitator", "Brown House Participant"
+];
+
+var CAREERS = [
+  { id: 1, career: "Software Developer", industry: "Tech", skills: ["Coding", "Problem Solving", "Data Analysis"], salary: "$80k–120k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of YouTube Tutorials, 3. Uncle Gopal's Garage Bootcamp, 4. Streamer University, 5. The School of Hard Knocks", details: { "What You Do": "You Basically Tell A Computer What To Do, But In A Secret Language. It's Like Being A Wizard, But Instead Of Spells, You Cast Code. The Goal Is To Make Apps That Don't Crash And Websites That Aren't Mid. Sometimes You Just Gotta Debug For Hours To Get The Job Done.", "Key Contributions": "You Know How Your Favorite App Just Works? Or How That One Website Loads Super Fast? Yeah, That's You. You're The One Making Sure The Internet Isn't Broken, One Line Of Code At A Time. It's Giving Digital Architect. You're Lowkey Building The Future." } },
+  { id: 2, career: "Photographer", industry: "Creative", skills: ["Photography", "Design", "Communication"], salary: "$40k–70k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The 'Just Wing It' Institute, 3. Your Mom's House", details: { "What You Do": "Your Job Is To Make Things Look Fire. You Just Click, Click, Click And Somehow The Results Are Always Aesthetic. You're All About That Perfect Angle And Making Sure The Lighting Is On Point. Then You Hit The Edits And Make It Pop Off.", "Key Contributions": "You’re The One Who Makes Everyone's Profile Pic Look Good. You Also Capture All The Main Character Moments, From Family Gatherings To Concerts. Basically, If It's On The 'Gram And It's A Banger, You're Probably Behind It. You're A Visual Storyteller, But Make It Nonchalant." } },
+  { id: 3, career: "Editor", industry: "Creative", skills: ["Writing", "Communication"], salary: "$50k–80k", education: "Top 5 Colleges: 1. Your Local Community College, 2. Your Mom's House", details: { "What You Do": "You’re Basically The Cleanup Crew For Words. Someone Writes Something, And You Swoop In To Make Sure It's Not Cringe And Makes Sense. You Remove The Typos, Fix The Awkward Sentences, And Polish It Until It Slaps. It’s A Whole Lot Of Looking For Little Mistakes, But It's Lowkey Satisfying.", "Key Contributions": "You're The Silent Hero Behind Every Fire Blog Post, Every Perfect Movie Scene, And Every Book That Keeps You Hooked. Without You, Content Would Be A Hot Mess. You Make Sure The Message Lands Perfectly And Everyone Sounds Like They Know What They’re Doing." } },
+  { id: 4, career: "Game Designer", industry: "Tech", skills: ["Coding", "Writing", "Design", "Project Management"], salary: "$60k–100k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The 'Couch Potato' University, 3. Streamer University, 4. The School of Hard Knocks", details: { "What You Do": "You're The Mastermind Behind The Fun. You Get To Decide What The Game's About, What The Characters Do, And What The Rules Are. You’re Literally Building Worlds For People To Vibe In. It’s Like Playing Make-Believe, But You Get Paid For It.", "Key Contributions": "You Created The Worlds People Get Lost In. Remember That Game You Couldn’t Stop Playing? That Was You. You’re Responsible For The Next Big Thing That’s Going To Make Everyone Ignore Their Homework And Go For That One Last Round." } },
+  { id: 5, career: "Content Creator", industry: "Creative", skills: ["Photography", "Writing", "Marketing", "Video Editing"], salary: "$45k–75k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of TikTok, 3. Your Mom's House, 4. The School of Viral Trends, 5. The 'It's Giving...' Academy", details: { "What You Do": "Your Life Is All About Making Things People Want To Double-Tap, Share, Or Comment 'Slay.' You're A Professional At Understanding The Internet's Brain. You Whip Up Videos, Posts, And Articles That Get All The Hype. The Goal Is To Go Viral, No Cap.", "Key Contributions": "You're The One Who Creates The Memes, The Trends, And The Short-Form Videos That Take Over Everyone's Feed. You're Shaping Culture, One Post At A Time. It's A Hustle, But When You Hit That Algorithm, It Feels Good." } },
+  { id: 6, career: "Data Analyst", industry: "Tech", skills: ["Analytics", "Data Analysis", "Problem Solving"], salary: "$70k–110k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Hard Knocks", details: { "What You Do": "You Basically Look At A Bunch Of Numbers And Find The Tea. You Find The Secrets Hiding In All The Information Companies Collect. You’re A Digital Detective, Turning Boring Data Into Something Useful. You’re A Total Numbers Person.", "Key Contributions": "You’re The Reason Brands Know What You Want To Buy Before You Even Do. You’re Also The Person Who Can Prove To Your Boss Why Your Idea Is A Good One, With Receipts. You Turn Chaos Into Clarity, Which Is A Major Glow Up For Any Business." } },
+  { id: 8, career: "Marketing Specialist", industry: "Creative", skills: ["Marketing", "Writing", "Analytics", "Public Speaking"], salary: "$55k–90k", education: "Top 5 Colleges: 1. Your Local Community College, 2. Your Mom's House, 3. The 'It's Giving...' Academy, 4. The School of Hard Knocks", details: { "What You Do": "Your Main Goal Is To Make People Obsessed With A Product Or A Brand. You Create All The Catchy Slogans And Viral Ads. You’re A Professional Convincer, A Hype Master. It’s All About Getting Everyone To Talk About The Same Thing And Making It A Cultural Moment.", "Key Contributions": "You’re Responsible For Those Unforgettable Ad Campaigns That Live In Your Head Rent-Free. You Get People To Stop Scrolling And Actually Pay Attention. You’re Not Just Selling Stuff; You’re Selling A Vibe, A Lifestyle, A Whole Era." } },
+  { id: 9, career: "Teacher", industry: "Education", skills: ["Public Speaking", "Communication", "Problem Solving"], salary: "$40k–70k", education: "Top 5 Colleges: 1. Your Local Community College, 2. Your Mom's House, 3. The School of Hard Knocks", details: { "What You Do": "Your Job Is To Hang Out With A Bunch Of Young People And Drop Some Knowledge. You Have To Be Good At Explaining Things, Managing Chaos, And Keeping A Room Full Of People From Getting Too Bored. It's A Lot Of Talking, But You're Lowkey Shaping The Next Generation.", "Key Contributions": "You're The Person Who Helped That One Student Finally Get Algebra. You're The One Who Inspired A Kid To Become A Writer Or An Artist. You’re Not Just A Teacher; You're A Legend In The Making. You're A Core Memory For A Lot Of People, No Cap." } },
+  { id: 10, career: "Illustrator", industry: "Creative", skills: ["Illustration", "Design"], salary: "$35k–60k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Hard Knocks", details: { "What You Do": "You Get To Draw For A Living. You Turn Boring Ideas Into Visual Masterpieces. Whether It's For A Book, A Comic, Or Just An Icon For An App, Your Job Is To Make It Look Cool. You're A Professional Doodler.", "Key Contributions": "You’re The One Who Makes All The Characters In Movies And Books Look Legit. You Brought Them To Life. Without You, Stories Would Just Be... Words. You’re The Reason Why We Know What Our Favorite Fantasy Worlds And Heroes Look Like." } },
+  { id: 11, career: "Professional Sleeper", industry: "Lifestyle", skills: ["Napping", "Deep Relaxation", "Dream Interpretation", "Pillow Fort Construction"], salary: "$20k–50k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Napping, 3. The 'Pillow Fort' Institute, 4. Your Mom's House, 5. The School of Hard Knocks", details: { "What You Do": "Your Job Is To Literally Get Paid To Sleep. You're Basically A Professional Napper. People Put You In A Bed And You Just... Sleep. Then You Wake Up And Tell Them How It Went. It’s A Low-Energy Job, But Someone’s Gotta Do It.", "Key Contributions": "You’re Helping To Make The World A Comfier Place. By Napping, You're Helping Companies Design Better Pillows And Mattresses. You're The Reason People Get A Good Night's Rest. You're A Hero, Just A Very Sleepy One." } },
+  { id: 12, career: "Professional Eater / Food Critic", industry: "Lifestyle", skills: ["Culinary Appreciation", "Descriptive Writing", "Taste Testing", "Critical Thinking", "Food Photography"], salary: "$45k–90k", education: "Top 5 Colleges: 1. Your Local Community College, 2. Your Mom's House, 3. The School of Hard Knocks", details: { "What You Do": "Your Job Is To Go To Restaurants And Eat. That’s It. You Taste All The Things And Then You Write About Them. It's Giving Main Character Energy. It's A Delicious Way To Earn A Living, And You're Always Getting All The Insider Info On The Best Spots.", "Key Contributions": "You're The Person Who Tells Everyone Where To Get The Best Tacos. Your Opinion Shapes Where People Spend Their Money On Food. You're A Foodie Icon, And Your Reviews Can Either Make Or Break A Restaurant. No Pressure." } },
+  { id: 13, career: "Ai-Powered Trend Spotter (Social Media Analyst)", industry: "Tech", skills: ["Trend Analysis", "Pattern Recognition", "Social Media Savviness", "Content Curation", "Algorithm Understanding"], salary: "$50k–85k", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Viral Trends, 3. The 'I'm Always On TikTok' Academy, 4. The Institute Of Memes, 5. The School of Hard Knocks", details: { "What You Do": "You Get To Scroll On Social Media All Day, But With A Purpose. You’re Looking For The Next Big Thing Before Anyone Else Even Knows What It Is. You Track All The Trends And Tell Brands What's About To Pop Off. It's Like Being A Digital Fortune Teller.", "Key Contributions": "You're The Reason Why Companies Know What To Post And What Sounds Cringe. You Keep Them From Being. You’re Shaping The Internet, One Viral Moment At A Time. Without You, Brands Would Still Be Trying To Do The Floss." } },
+  { id: 14, career: "Asmr Specialist", industry: "Entertainment", skills: ["Sound Design", "Audio Editing", "Microphone Technique", "Relaxation Techniques", "Creativity", "Communication"], salary: "$35k–80k (variable based on platform influence)", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Tapping, 3. Streamer University, 4. Your Mom's House, 5. The School of Hard Knocks", details: { "What You Do": "You Whisper And Tap Things Into A Microphone And People Go Nuts. Your Job Is To Create Super Chill Sounds That Give People Tingles And Help Them Relax. It's Like Being A Sound Artist, But Your Art Helps People Fall Asleep. It's A Whole Lot Of Quiet, But The Vibe Is Immaculate.", "Key Contributions": "You Are The Reason Millions Of People Can Finally Relax. Your Whispers And Gentle Tapping Sounds Are A Form Of Therapy For A Lot Of People. You’re Bringing Peace And Calm To The Internet, And That’s A Major Glow Up." } },
+  { id: 15, career: "Esports Professional (Clash Royale)", industry: "Entertainment", skills: ["Strategic Thinking", "Quick Reflexes", "Game Knowledge", "Deck Building", "Content Creation", "Audience Engagement"], salary: "$60k–150k+ (top tier competitive pay)", education: "Top 5 Colleges: 1. Your Local Community College, 2. Streamer University, 3. The School of 'One More Match' (No cap), 4. The School of Hard Knocks", details: { "What You Do": "You Get Paid To Be Cracked At Video Games. It’s All About Practice, Skill, And Being Good Under Pressure. You’re Out Here Playing For Money, Fame, And Bragging Rights. You Also Stream, So You’re A Content Creator, Too. It's A Grind, But The Rewards Are Major.", "Key Contributions": "You're At The Top Of Your Game, Literally. You're The Reason Everyone Else Is Trying To Copy Your Deck And Your Strategy. You're A Legend, A Total Goat. You're Raising The Bar And Inspiring The Next Generation Of Gamers." } },
+  { id: 16, career: "Reality Tv Analyst (Love Island)", industry: "Entertainment", skills: ["Emotional Intelligence", "Trend Analysis", "Social Commentary", "Fan Engagement", "Pop Culture Knowledge", "Content Creation"], salary: "$25k–60k (based on platform influence)", education: "Top 5 Colleges: 1. Your Local Community College, 2. The School of Binge-Watching, 3. Your Mom's House, 4. The School of Hard Knocks", details: { "What You Do": "Your Job Is To Watch Reality Tv And Then Spill All The Tea. You Recap All The Drama, Break Down The Relationships, And Let Everyone Know What's Really Going On. You’re Basically A Professional Gossip, But In A Smart Way. It’s A Lot Of Watching Tv, But Someone Has To Do It, Right?", "Key Contributions": "You Are The Voice Of The Fandom. You Give People The Analysis They Need, And You Create A Community Around The Shows. You're Making Pop Culture More Fun And Engaging For Everyone. You're Not Just Watching; You’re Creating Content And A Whole Conversation." } }
+];
+
+
+var BACKGROUNDS = [
+    { type: 'image', url: 'kai_cenat.png' },
+    { type: 'image', url: 'duke_dennis.png' },
+    { type: 'image', url: 'marlon.png' },
+    { type: 'color', name: 'light', bgColor: '#f5f5f5', textColor: '#222' },
+    { type: 'color', name: 'neon', bgColor: '#000', textColor: '#ff00ff' },
+    { type: 'color', name: 'gradient-1', className: 'gradient-1', textColor: '#fff' },
+    { type: 'color', name: 'gradient-2', className: 'gradient-2', textColor: '#fff' },
+    { type: 'color', name: 'gradient-3', className: 'gradient-3', textColor: '#222' },
+    { type: 'color', name: 'gradient-4', className: 'gradient-4', textColor: '#fff' },
+    { type: 'color', name: 'gradient-5', className: 'gradient-5', textColor: '#fff' },
+];
+
+var QUIZ_Q = [
+    { q: "Do you enjoy figuring out how things work?", skill: "Problem Solving" },
+    { q: "Are you comfortable speaking in front of people?", skill: "Public Speaking" },
+    { q: "Do you pay attention to small details?", skill: "Critical Thinking" },
+    { q: "Do you like to write or tell stories?", skill: "Writing" },
+    { q: "Are you creative with visual arts?", skill: "Design" },
+    { q: "Do you find it easy to connect with others?", skill: "Communication" },
+    { q: "Are you comfortable using a computer?", skill: "Coding" },
+    { q: "Do you like organizing or managing projects?", skill: "Project Management" },
+    { q: "Are you interested in how data tells a story?", skill: "Data Analysis" },
+    { q: "Do you follow what's trending online?", skill: "Social Media Savviness" },
+    { q: "Do you enjoy editing videos?", skill: "Video Editing" },
+    { q: "Do you have a knack for taking good photos?", skill: "Photography" },
+    { q: "Do you like to take naps?", skill: "Napping" }
+];
+
+
+var skills = [];
+var saved = [];
+var compareList = [];
+var quizIndex = 0;
+var quizScore = [];
+var currentTheme = 'light';
+var viewedCareersCount = 0;
+
+
+function $(id) {
+    return document.getElementById(id);
+}
+
+
+function capitalizeWords(str) {
+    
+    if (!str || typeof str !== 'string') {
+        return "";
+    }
+    
+    var words = str.split(' ');
+    
+    for (var i = 0; i < words.length; i++) {
+        var word = words[i];
+        if (word.length > 0) {
+            words[i] = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }
+    }
+    
+    return words.join(' ');
+}
+
+
+function saveToStorage() {
+    try {
+        localStorage.setItem('skillsaved', JSON.stringify(saved));
+        localStorage.setItem('theme', currentTheme);
+        localStorage.setItem('viewedCareersCount', viewedCareersCount.toString());
+    } catch (e) {
+        console.error("Could not save to local storage:", e);
+    }
+}
+
+
+function loadFromStorage() {
+    try {
+        var saved_data = localStorage.getItem('skillsaved');
+        if (saved_data) {
+            saved = JSON.parse(saved_data);
+        }
+        var theme_data = localStorage.getItem('theme');
+        if (theme_data) {
+            currentTheme = theme_data;
+        }
+        var view_count_data = localStorage.getItem('viewedCareersCount');
+        if (view_count_data) {
+            viewedCareersCount = parseInt(view_count_data);
+        }
+    } catch (e) {
+        console.error("Could not load from local storage:", e);
+    }
+}
+
+
+var input = $('skill-input');
+var skillsDiv = $('skills-input');
+var autoList = $('autocomplete');
+var autoIndex = -1;
+
+
+function renderTags() {
+    
+    var existingTags = skillsDiv.querySelectorAll('.tag');
+    for (var i = 0; i < existingTags.length; i++) {
+        existingTags[i].remove();
+    }
+    
+    skills.forEach(function(s) {
+        var tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = capitalizeWords(s);
+        var rem = document.createElement('span');
+        rem.className = 'remove';
+        rem.textContent = '×';
+        rem.onclick = function() { removeSkill(s); };
+        tag.appendChild(rem);
+        skillsDiv.insertBefore(tag, input);
+    });
+    
+    if (skills.length === 0) {
+        input.placeholder = "Whatcu good at fool?";
+    } else {
+        input.placeholder = "";
+    }
+}
+
+
+function addSkill(s) {
+    if (!s) {
+        return;
+    }
+    s = s.toLowerCase().trim();
+    
+    if (SKILLS.map(function(sk) { return sk.toLowerCase(); }).indexOf(s) !== -1 && skills.indexOf(s) === -1) {
+        skills.push(s);
+        renderTags();
+        matchCareers();
+    }
+    input.value = '';
+    autoList.hidden = true;
+}
+
+
+function removeSkill(s) {
+    skills = skills.filter(function(x) { return x !== s; });
+    renderTags();
+    matchCareers();
+}
+
+
+function showAutocomplete() {
+    var q = input.value.trim().toLowerCase();
+    var matches = [];
+    if (q) {
+        var lowercase_skills = SKILLS.map(function(sk) { return sk.toLowerCase(); });
+        lowercase_skills.forEach(function(skill) {
+            if (skill.includes(q) && skills.indexOf(skill) === -1 && matches.length < 6) {
+                matches.push(skill);
+            }
+        });
+    }
+    
+    autoList.innerHTML = '';
+    for (var i = 0; i < matches.length; i++) {
+        var m = matches[i];
+        var e = document.createElement('div');
+        e.className = 'autocomplete-item';
+        e.textContent = capitalizeWords(m);
+        e.onclick = (function(item) {
+            return function() {
+                selectItem(item);
+            };
+        })(m);
+        autoList.appendChild(e);
+    }
+    autoList.hidden = matches.length === 0;
+    autoIndex = -1;
+}
+
+
+function selectItem(item) {
+    addSkill(item);
+    input.value = '';
+    autoList.hidden = true;
+}
+
+
+input.addEventListener('input', showAutocomplete);
+input.addEventListener('keydown', function(ev) {
+    var items = autoList.querySelectorAll('.autocomplete-item');
+    if (ev.key === 'ArrowDown') {
+        autoIndex = Math.min(++autoIndex, items.length - 1);
+        if (items[autoIndex]) {
+            items[autoIndex].scrollIntoView({ block: 'nearest' });
+        }
+    } else if (ev.key === 'ArrowUp') {
+        autoIndex = Math.max(--autoIndex, 0);
+        if (items[autoIndex]) {
+            items[autoIndex].scrollIntoView({ block: 'nearest' });
+        }
+    } else if (ev.key === 'Enter') {
+        if (autoIndex >= 0) {
+            selectItem(items[autoIndex].textContent);
+        } else {
+            addSkill(input.value);
+        }
+        input.value = '';
+        autoList.hidden = true;
+        ev.preventDefault();
+    } else if (ev.key === 'Escape') {
+        autoList.hidden = true;
+    }
+    items.forEach(function(it, i) {
+        if (i === autoIndex) {
+            it.classList.add('active');
+        } else {
+            it.classList.remove('active');
+        }
+    });
+});
+
+document.addEventListener('click', function(event) {
+    if (!skillsDiv.contains(event.target)) {
+        autoList.hidden = true;
+    }
+});
+
+
+var resultsDiv = $('results');
+
+
+function matchCareers(currentSkills) {
+    if (currentSkills === undefined) {
+        currentSkills = skills;
+    }
+    
+    var candidates = CAREERS.filter(function(c) {
+        var all_skills_match = true;
+        
+        for (var i = 0; i < currentSkills.length; i++) {
+            var user_skill = currentSkills[i].toLowerCase();
+            var career_has_skill = false;
+            for (var j = 0; j < c.skills.length; j++) {
+                if (c.skills[j].toLowerCase() === user_skill) {
+                    career_has_skill = true;
+                    break;
+                }
+            }
+            if (!career_has_skill) {
+                all_skills_match = false;
+                break;
+            }
+        }
+        return all_skills_match;
+    });
+
+    
+    if (currentSkills.length === 0) {
+        candidates = CAREERS;
+    }
+
+    
+    candidates.sort(function(a, b) {
+        var aMatches = 0;
+        var bMatches = 0;
+        currentSkills.forEach(function(sk) {
+            if (a.skills.map(function(s) { return s.toLowerCase(); }).includes(sk.toLowerCase())) {
+                aMatches++;
+            }
+            if (b.skills.map(function(s) { return s.toLowerCase(); }).includes(sk.toLowerCase())) {
+                bMatches++;
+            }
+        });
+        return bMatches - aMatches;
+    });
+
+    if (currentSkills === skills) {
+        renderResults(candidates);
+    }
+    return candidates;
+}
+
+
+function renderResults(list, targetDiv) {
+    if (targetDiv === undefined) {
+        targetDiv = resultsDiv;
+    }
+    targetDiv.innerHTML = "<h3>" + capitalizeWords("Results") + "</h3>";
+
+    if (list.length === 0) {
+        targetDiv.innerHTML += `
+            <p>${capitalizeWords('No careers found matching your skills, bro.')}</p>
+            ${skills.length === 0 ? `<p>${capitalizeWords('Try adding some skills to get started (or take the skill quiz!), no cap.')}</p>` : `<p>${capitalizeWords('Consider adjusting your skills or filters.')}</p>`}
+        `;
+        return;
+    }
+
+    list.forEach(function(c) {
+        var card = document.createElement('div');
+        card.className = 'result-card';
+        var info = document.createElement('div');
+        info.className = 'card-info';
+        info.textContent = c.career;
+        info.tabIndex = 0;
+        info.onclick = function() { openCareerModal(c); };
+        info.onkeypress = function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { openCareerModal(c); } };
+
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+
+        var saveBtn = document.createElement('button');
+        saveBtn.textContent = '💾';
+        saveBtn.title = 'Save Career';
+        saveBtn.setAttribute('aria-label', "Save " + c.career);
+        saveBtn.onclick = function() { saveCareer(c); };
+
+        var compBtn = document.createElement('button');
+        compBtn.textContent = '📊';
+        compBtn.title = 'Compare Career';
+        compBtn.setAttribute('aria-label', "Compare " + c.career + " with others");
+        compBtn.onclick = function() { compareCareer(c); };
+
+        actions.append(saveBtn, compBtn);
+        card.append(info, actions);
+        targetDiv.appendChild(card);
+    });
+}
+
+
+function openCareerModal(c) {
+  $('modal-title').textContent = c.career;
+  var modal_html_string = "";
+  
+  modal_html_string += "<p style='color:#222;'><strong>Industry:</strong> " + c.industry + "</p>";
+  modal_html_string += "<p style='color:#222;'><strong>Required Skills:</strong> " + c.skills.join(', ') + "</p>";
+  modal_html_string += "<p style='color:#222;'><strong>Estimated Salary:</strong> " + c.salary + "</p>";
+  modal_html_string += "<p style='color:#222;'><strong>Education Level:</strong> " + c.education + "</p>";
+  
+  
+  if (c.details) {
+      
+      Object.entries(c.details).forEach(function(entry) {
+          var key = entry[0];
+          var value = entry[1];
+          modal_html_string += "<p style='color:#222;'><strong>" + capitalizeWords(key) + "</strong>: " + value + "</p>";
+      });
+  }
+  modal_html_string += `
+    <div class="quote" style="margin-top: 1.5rem; color:#222; background: rgba(0,0,0,0.1);">
+        "I Just Wanna Be Successful."
+        <cite style="color:#222;">- JAY-Z</cite>
+    </div>
+  `;
+  $('modal-body').innerHTML = modal_html_string;
+  $('career-modal').style.display = 'flex';
+  $('modal-content').focus();
+  viewedCareersCount++;
+  saveToStorage();
+}
+$('modal-close').onclick = function() {
+    $('career-modal').style.display = 'none';
+};
+
+
+function downloadPDF() {
+    
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF();
+    var y = 20;
+    var lineHeight = 8;
+    var margin = 10;
+    var pageHeight = doc.internal.pageSize.height;
+
+    doc.setFontSize(16);
+    doc.text(capitalizeWords("Your Career Report"), margin, y);
+    y += 15;
+
+    doc.setFontSize(12);
+    doc.text(capitalizeWords("Your Skills:"), margin, y); y += lineHeight;
+    if (skills.length === 0) {
+        doc.text(capitalizeWords("No skills entered. Consider adding some to refine your matches."), margin, y); y += lineHeight;
+    } else {
+        skills.forEach(function(s) { doc.text("- " + capitalizeWords(s), margin + 5, y); y += lineHeight; });
+    }
+    y += 10;
+
+    doc.text(capitalizeWords("Matching Careers:"), margin, y); y += lineHeight;
+    var matched = CAREERS.filter(function(c) {
+        var all_match = true;
+        skills.forEach(function(sk) {
+            if (!c.skills.map(function(s) { return s.toLowerCase(); }).includes(sk.toLowerCase())) {
+                all_match = false;
+            }
+        });
+        return all_match || skills.length === 0;
+    });
+
+    if (matched.length === 0) {
+        doc.text(capitalizeWords("No careers matched your current skill set."), margin, y);
+    } else {
+        matched.forEach(function(c, i) {
+            if (y + (lineHeight * 4) > pageHeight - margin) {
+                doc.addPage();
+                y = margin + 10;
+                doc.setFontSize(12);
+                doc.text(capitalizeWords("Matching Careers (Continued):"), margin, y); y += lineHeight;
+            }
+            doc.text((i + 1) + ". " + c.career, margin + 5, y); y += lineHeight;
+            doc.text("   Industry: " + c.industry, margin + 10, y); y += lineHeight;
+            doc.text("   Salary: " + c.salary, margin + 10, y); y += lineHeight;
+            doc.text("   Education: " + c.education, margin + 10, y); y += lineHeight;
+            y += 5;
+        });
+    }
+
+    doc.save("career_report.pdf");
+}
+
+
+var savedCareersPanel = $('saved-careers-panel');
+function saveCareer(c) {
+    var already_saved = false;
+    for (var i = 0; i < saved.length; i++) {
+        if (saved[i].id === c.id) {
+            already_saved = true;
+            break;
+        }
+    }
+    if (!already_saved) {
+        saved.push(c);
+        saveToStorage();
+        loadSavedPanel();
+    } else {
+        alert(c.career + " Is Already In Your Saved List, Bro.");
+    }
+}
+
+function removeSavedCareer(id) {
+    saved = saved.filter(function(item) { return item.id !== id; });
+    saveToStorage();
+    loadSavedPanel();
+}
+
+function loadSavedPanel() {
+    savedCareersPanel.innerHTML = "<h3>" + capitalizeWords("Saved Careers") + "</h3>";
+    if (saved.length === 0) {
+        savedCareersPanel.innerHTML += `
+            <p>${capitalizeWords('No careers saved yet. Explore and save some options!')}</p>
+            <div class="quote">
+                "I'm On A Mission, Yeah, I'm A Man With A Vision."
+                <cite>- 21 Savage</cite>
+            </div>
+        `;
+        return;
+    }
+    saved.forEach(function(c) {
+        var card = document.createElement('div');
+        card.className = 'saved-item result-card';
+        var info = document.createElement('div');
+        info.className = 'card-info';
+        info.textContent = c.career;
+        info.tabIndex = 0;
+        info.onclick = function() { openCareerModal(c); };
+        info.onkeypress = function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { openCareerModal(c); } };
+
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+        var removeBtn = document.createElement('button');
+        removeBtn.textContent = '🗑️';
+        removeBtn.title = 'Remove From Saved';
+        removeBtn.setAttribute('aria-label', "Remove " + c.career + " from saved careers");
+        removeBtn.onclick = function() { removeSavedCareer(c.id); };
+
+        var compBtn = document.createElement('button');
+        compBtn.textContent = '📊';
+        compBtn.title = 'Compare Career';
+        compBtn.setAttribute('aria-label', "Compare " + c.career + " with others");
+        compBtn.onclick = function() { compareCareer(c); };
+
+        actions.append(compBtn, removeBtn);
+        card.append(info, actions);
+        savedCareersPanel.appendChild(card);
+    });
+}
+
+
+var comparePanel = $('compare-panel');
+function compareCareer(c) {
+    var already_comparing = false;
+    for (var i = 0; i < compareList.length; i++) {
+        if (compareList[i].id === c.id) {
+            already_comparing = true;
+            break;
+        }
+    }
+    if (!already_comparing) {
+        if (compareList.length < 2) {
+            compareList.push(c);
+            renderComparePanel();
+        } else {
+            alert('You Can Only Compare Up To 2 Careers At A Time, Bro. Please Remove One To Add Another.');
+        }
+    } else {
+        alert(c.career + " Is Already In Your Comparison List, Bro.");
+    }
+}
+
+function removeCompareCareer(id) {
+    compareList = compareList.filter(function(item) { return item.id !== id; });
+    renderComparePanel();
+}
+
+function renderComparePanel() {
+    comparePanel.innerHTML = "<h3>" + capitalizeWords("Compare Careers") + "</h3>";
+    if (compareList.length === 0) {
+        comparePanel.innerHTML += `
+            <p>${capitalizeWords('Select up to 2 careers to compare their details.')}</p>
+            <div class="quote">
+                "You Gotta Be A Leader, You Can't Be No Follower."
+                <cite>- Gucci Mane</cite>
+            </div>
+        `;
+        return;
+    }
+
+    compareList.forEach(function(c) {
+        var card = document.createElement('div');
+        card.className = 'compare-card result-card';
+        var info = document.createElement('div');
+        info.className = 'card-info';
+        info.textContent = c.career;
+        info.tabIndex = 0;
+        info.onclick = function() { openCareerModal(c); };
+        info.onkeypress = function(ev) { if (ev.key === 'Enter' || ev.key === ' ') { openCareerModal(c); } };
+
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+        var removeBtn = document.createElement('button');
+        removeBtn.textContent = '🗑️';
+        removeBtn.title = 'Remove From Comparison';
+        removeBtn.setAttribute('aria-label', "Remove " + c.career + " from comparison");
+        removeBtn.onclick = function() { removeCompareCareer(c.id); };
+
+        actions.append(removeBtn);
+        card.append(info, actions);
+        comparePanel.appendChild(card);
+    });
+
+    if (compareList.length === 2) {
+        displayComparisonDetails(compareList[0], compareList[1]);
+    }
+}
+
+function displayComparisonDetails(c1, c2) {
+    var detailsHtml = "<h4>" + capitalizeWords("Detailed Comparison") + "</h4>";
+    detailsHtml += `
+        <table>
+          <thead>
+            <tr>
+              <th>${capitalizeWords('Category')}</th>
+              <th>${c1.career}</th>
+              <th>${c2.career}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${capitalizeWords('Industry')}</td>
+              <td>${c1.industry}</td>
+              <td${c1.industry !== c2.industry ? ' class="compare-card-diff"' : ''}>${c2.industry}</td>
+            </tr>
+            <tr>
+              <td>${capitalizeWords('Estimated Salary')}</td>
+              <td>${c1.salary}</td>
+              <td${c1.salary !== c2.salary ? ' class="compare-card-diff"' : ''}>${c2.salary}</td>
+            </tr>
+            <tr>
+              <td>${capitalizeWords('Education Level')}</td>
+              <td>${c1.education}</td>
+              <td${c1.education !== c2.education ? ' class="compare-card-diff"' : ''}>${c2.education}</td>
+            </tr>
+            <tr>
+              <td>${capitalizeWords('Skills Required')}</td>
+              <td>${c1.skills.join(', ')}</td>
+              <td>${c2.skills.join(', ')}</td>
+            </tr>
+          </tbody>
+        </table>
+    `;
+    var c1UniqueSkills = c1.skills.filter(function(s) { return c2.skills.indexOf(s) === -1; });
+    var c2UniqueSkills = c2.skills.filter(function(s) { return c1.skills.indexOf(s) === -1; });
+    var commonSkills = c1.skills.filter(function(s) { return c2.skills.indexOf(s) !== -1; });
+
+    if (commonSkills.length > 0 || c1UniqueSkills.length > 0 || c2UniqueSkills.length > 0) {
+        detailsHtml += "<p><strong>" + capitalizeWords("Skill Overlap:") + "</strong></p>";
+        if (commonSkills.length > 0) {
+            detailsHtml += "<p>" + capitalizeWords("Both require") + ": " + commonSkills.join(', ') + "</p>";
+        }
+        if (c1UniqueSkills.length > 0) {
+            detailsHtml += "<p>" + c1.career + " " + capitalizeWords("uniquely requires") + ": " + c1UniqueSkills.join(', ') + "</p>";
+        }
+        if (c2UniqueSkills.length > 0) {
+            detailsHtml += "<p>" + c2.career + " " + capitalizeWords("uniquely requires") + ": " + c2UniqueSkills.join(', ') + "</p>";
+        }
+    }
+
+    var compareDetailsDiv = document.createElement('div');
+    compareDetailsDiv.innerHTML = detailsHtml;
+    comparePanel.appendChild(compareDetailsDiv);
+}
+
+
+var themeSelect = $('theme-select');
+function applyTheme(themeName) {
+    if (themeName === 'random') {
+        var nonImageBackgrounds = BACKGROUNDS.filter(function(bg) { return bg.type !== 'image'; });
+        var randomIndex = Math.floor(Math.random() * nonImageBackgrounds.length);
+        var randomBg = nonImageBackgrounds[randomIndex];
+        applyBackground(randomBg);
+        currentTheme = randomBg.name || randomBg.className || 'light';
+    } else {
+        var selectedBg = BACKGROUNDS.find(function(bg) { return bg.name === themeName || bg.className === themeName; });
+        if (selectedBg) {
+            applyBackground(selectedBg);
+            currentTheme = themeName;
+        }
+    }
+   
+    document.body.className = currentTheme;
+    themeSelect.value = currentTheme;
+    saveToStorage();
+}
+
+function applyBackground(bg) {
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundColor = '';
+    
+    var currentClasses = document.body.classList;
+    BACKGROUNDS.forEach(function(b) {
+        if (b.className) {
+            currentClasses.remove(b.className);
+        }
+    });
+
+    if (bg.type === 'image') {
+        document.body.style.backgroundImage = `url('${bg.url}')`;
+        document.body.style.backgroundColor = '#0b0014';
+        document.body.style.color = '#eee';
+        document.body.classList.add('dark');
+    } else {
+        if (bg.className) {
+            document.body.classList.add(bg.className);
+        } else {
+            document.body.style.backgroundColor = bg.bgColor;
+        }
+        document.body.style.color = bg.textColor;
+    }
+}
+
+themeSelect.onchange = function() {
+    applyTheme(themeSelect.value);
+};
+
+
+var quizContainer = $('quiz-container');
+var quizQuestion = $('quiz-question');
+var quizOptions = $('quiz-options');
+var quizProgress = $('quiz-progress');
+var quizNextBtn = $('quiz-next');
+var quizRestartBtn = $('quiz-restart');
+var quizCloseBtn = $('quiz-close');
+
+function runQuiz() {
+    quizContainer.style.display = 'flex';
+    quizIndex = 0;
+    quizScore = Array(QUIZ_Q.length).fill(false);
+    quizRestartBtn.style.display = 'none';
+    quizNextBtn.style.display = 'inline-block';
+    displayQuizQuestion();
+}
+
+function displayQuizQuestion() {
+    if (quizIndex < QUIZ_Q.length) {
+        var currentQ = QUIZ_Q[quizIndex];
+        quizProgress.textContent = "Question " + (quizIndex + 1) + " of " + QUIZ_Q.length;
+        quizQuestion.textContent = capitalizeWords(currentQ.q);
+        
+        quizOptions.innerHTML = ""; 
+        var yesLabel = document.createElement('label');
+        yesLabel.className = 'quiz-option';
+        var yesInput = document.createElement('input');
+        yesInput.type = 'radio';
+        yesInput.name = 'quiz-answer';
+        yesInput.value = 'yes';
+        yesLabel.appendChild(yesInput);
+        yesLabel.appendChild(document.createTextNode(" Yes"));
+        
+        var noLabel = document.createElement('label');
+        noLabel.className = 'quiz-option';
+        var noInput = document.createElement('input');
+        noInput.type = 'radio';
+        noInput.name = 'quiz-answer';
+        noInput.value = 'no';
+        noLabel.appendChild(noInput);
+        noLabel.appendChild(document.createTextNode(" No"));
+        
+        quizOptions.appendChild(yesLabel);
+        quizOptions.appendChild(noLabel);
+
+        yesInput.onchange = function(ev) {
+            quizScore[quizIndex] = true;
+            yesLabel.classList.add('selected');
+            noLabel.classList.remove('selected');
+        };
+        noInput.onchange = function(ev) {
+            quizScore[quizIndex] = false;
+            noLabel.classList.add('selected');
+            yesLabel.classList.remove('selected');
+        };
+        
+    } else {
+        showQuizResults();
+    }
+}
+
+quizNextBtn.onclick = function() {
+    var selectedOption = quizOptions.querySelector('input[name="quiz-answer"]:checked');
+    if (!selectedOption) {
+        alert(capitalizeWords('Please select an answer to proceed, bro.'));
+        return;
+    }
+    quizIndex++;
+    displayQuizQuestion();
+};
+
+function showQuizResults() {
+    var recommendedSkills = QUIZ_Q.filter(function(q, i) { return quizScore[i]; }).map(function(q) { return q.skill; });
+    quizProgress.textContent = capitalizeWords("Quiz Complete!");
+    quizQuestion.textContent = capitalizeWords("Based on your responses, we suggest the following skills:");
+    quizOptions.innerHTML = '';
+    if (recommendedSkills.length > 0) {
+        recommendedSkills.forEach(function(skill) {
+            var p = document.createElement('p');
+            p.className = 'quiz-option';
+            p.textContent = skill;
+            p.onclick = function() {
+                addSkill(skill);
+                closeQuiz();
+            };
+            quizOptions.appendChild(p);
+        });
+        var addAllBtn = document.createElement('button');
+        addAllBtn.textContent = capitalizeWords('Add All Suggested Skills');
+        addAllBtn.style.marginTop = '10px';
+        addAllBtn.onclick = function() {
+            recommendedSkills.forEach(function(s) { addSkill(s); });
+            closeQuiz();
+        };
+        quizOptions.appendChild(addAllBtn);
+
+    } else {
+        quizOptions.innerHTML = `<p>${capitalizeWords('No specific skills recommended at this time. Feel free to explore other options!')}</p>`;
+    }
+    quizNextBtn.style.display = 'none';
+    quizRestartBtn.style.display = 'inline-block';
+}
+
+quizRestartBtn.onclick = runQuiz;
+quizCloseBtn.onclick = closeQuiz;
+
+function closeQuiz() {
+    quizContainer.style.display = 'none';
+    quizOptions.innerHTML = '';
+}
+
+
+var whatIfModal = $('what-if-modal');
+var whatIfSkillSelect = $('what-if-skill');
+var simulateWhatIfButton = $('simulate-what-if');
+var whatIfResultsDiv = $('what-if-results');
+
+function setupWhatIfModal() {
+    whatIfSkillSelect.innerHTML = `<option value="">-- ${capitalizeWords('Select a Skill')} --</option>`;
+    var learnableSkills = SKILLS.filter(function(s) {
+        return skills.map(function(sk) { return sk.toLowerCase(); }).indexOf(s.toLowerCase()) === -1;
+    });
+    learnableSkills.forEach(function(s) {
+        var option = document.createElement('option');
+        option.value = s.toLowerCase();
+        option.textContent = s;
+        whatIfSkillSelect.appendChild(option);
+    });
+}
+
+function openWhatIfModal() {
+    setupWhatIfModal();
+    whatIfResultsDiv.innerHTML = `<p>${capitalizeWords('Select A Skill Above And Click \'Simulate\' To See How It Impacts Your Career Matches.')}</P><div class="quote" style="margin-top: 1rem;">"Money Is A Motivation, Not A Destination."<cite>- Drake</cite></div>`;
+    whatIfModal.style.display = 'flex';
+}
+
+simulateWhatIfButton.onclick = function() {
+    var hypotheticalSkill = whatIfSkillSelect.value;
+    if (!hypotheticalSkill) {
+        alert(capitalizeWords("Please select a hypothetical skill to simulate, bro."));
+        return;
+    }
+    var hypotheticalSkills = skills.concat([hypotheticalSkill]);
+    var hypotheticalMatches = matchCareers(hypotheticalSkills);
+
+    whatIfResultsDiv.innerHTML = "<h4>" + capitalizeWords("Impact of Adding \"" + capitalizeWords(hypotheticalSkill) + "\"") + "</h4>";
+    if (hypotheticalMatches.length === 0) {
+        whatIfResultsDiv.innerHTML += `<p>${capitalizeWords("Adding \"" + capitalizeWords(hypotheticalSkill) + "\" did not yield new matches. Try another skill, bro.")}</p>`;
+    } else {
+        renderResults(hypotheticalMatches, whatIfResultsDiv);
+    }
+    whatIfResultsDiv.innerHTML += `
+        <div class="quote" style="margin-top: 1.5rem;">
+            "You Either Got It Or You Don't."
+            <cite>- Lil Baby</cite>
+        </div>
+    `;
+};
+
+$('what-if-close').onclick = function() {
+    whatIfModal.style.display = 'none';
+};
+
+
+var personalStatementModal = $('personal-statement-modal');
+var personalStatementText = $('personal-statement-text');
+var personalStatementSubmitBtn = $('personal-statement-submit');
+var personalStatementCloseBtn = $('personal-statement-close');
+var currentStatementCareerId = null;
+var personalStatementForCareer = null; 
+
+function askForPersonalStatement(careerId, careerName) {
+    currentStatementCareerId = careerId;
+    personalStatementModal.style.display = 'flex';
+    $('personal-statement-content').querySelector('h2').textContent = capitalizeWords("Your Personal Statement For " + careerName);
+
+    
+    if (personalStatementForCareer && personalStatementForCareer.careerId === careerId) {
+        personalStatementText.value = personalStatementForCareer.text;
+    } else {
+        personalStatementText.value = '';
+    }
+}
+
+personalStatementSubmitBtn.onclick = function() {
+    var text = personalStatementText.value.trim();
+    var paragraphs = text.split('\n\n').filter(function(p) { return p.trim().length > 0; });
+
+    if (paragraphs.length < 3) {
+        alert(capitalizeWords('Please ensure your personal statement has at least 3 distinct paragraphs, bro.'));
+        return;
+    }
+
+    personalStatementForCareer = {
+        careerId: currentStatementCareerId,
+        text: text
+    };
+    saveToStorage();
+    personalStatementModal.style.display = 'none';
+};
+
+personalStatementCloseBtn.onclick = function() {
+    personalStatementModal.style.display = 'none';
+};
+
+
+var faqModal = $('faq-modal');
+var faqList = $('faq-list');
+
+function openFaqModal() {
+    faqModal.style.display = 'flex';
+    renderFaq();
+}
+
+function closeFaqModal() {
+    faqModal.style.display = 'none';
+}
+
+function renderFaq() {
+    var faqData = [
+        {
+            question: "How does the Job Matcher work?",
+            answer: "The Job Matcher uses the skills you enter to find careers that require those specific skills. It sorts the results by how many of your skills match the career's requirements, showing the most relevant options first."
+        },
+        {
+            question: "Can I save my skills or careers?",
+            answer: "Yes! The app saves your skills and a list of saved careers to your browser's local storage. Your data will be there the next time you visit. No accounts are needed."
+        },
+        {
+            question: "What is the 'YOLO Vibe' theme?",
+            answer: "The 'YOLO Vibe' theme is a randomized theme that cycles through the app's available background and color options each time you load it."
+        },
+    ];
+
+    var faqHtml = "<h3>" + capitalizeWords("Frequently Asked Questions") + "</h3>";
+    faqData.forEach(function(item) {
+        faqHtml += `
+            <div class="faq-item">
+                <h4>${capitalizeWords(item.question)}</h4>
+                <p>${capitalizeWords(item.answer)}</p>
+            </div>
+        `;
+    });
+    $('faq-achievements-list').innerHTML = faqHtml;
+}
+
+$('faq-button').onclick = openFaqModal;
+$('faq-modal-close').onclick = closeFaqModal;
+
+
+function initShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'q' && e.ctrlKey) {
+            e.preventDefault();
+            runQuiz();
+        }
+        if (e.key === 'w' && e.ctrlKey) {
+            e.preventDefault();
+            openWhatIfModal();
+        }
+        if (e.key === 'f' && e.ctrlKey) {
+            e.preventDefault();
+            openFaqModal();
+        }
+        if (e.key === 'Escape') {
+            if ($('career-modal').style.display === 'flex') {
+                $('career-modal').style.display = 'none';
+            }
+            if ($('quiz-container').style.display === 'flex') {
+                closeQuiz();
+            }
+            if ($('what-if-modal').style.display === 'flex') {
+                whatIfModal.style.display = 'none';
+            }
+            if ($('personal-statement-modal').style.display === 'flex') {
+                personalStatementModal.style.display = 'none';
+            }
+            if ($('faq-modal').style.display === 'flex') {
+                closeFaqModal();
+            }
+        }
+    });
+}
+
+
+function init() {
+    loadFromStorage();
+    applyTheme('random'); 
+    renderTags();
+    matchCareers();
+    loadSavedPanel();
+    renderComparePanel();
+    initShortcuts();
+    renderFaq();
+
+    
+    $('clear-button').onclick = function() {
+        skills = [];
+        renderTags();
+        matchCareers();
+    };
+    $('quiz-button').onclick = function() {
+        runQuiz();
+    };
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
