@@ -1,1 +1,1 @@
-# Job
+This is a website that helps you find a job. It's meant to be funny. It was coded in HTML, Javascript, and CSS. Basically you put in skills that you are good at and it reccomends you some jobs. It has additional features like telling you descriptions needed for the job (Salary, education needed etc.) and you can compare jobs too.
